@@ -27,7 +27,8 @@
   (ignore-stderr (with-stdout-to bindir.probed (system "opam config var bin || echo %{ocaml_bin}"))))
 
 (rule
-  (ignore-stderr (with-stdout-to libdir.probed (system "opam config var lib || ocamlfind printconf destdir || echo %{ocaml_where}"))))
+;  (ignore-stderr (with-stdout-to libdir.probed (system "opam config var lib || ocamlfind printconf destdir || echo %{ocaml_where}"))))
+  (ignore-stderr (with-stdout-to libdir.probed (echo "/home/dra/ocamlbuild/_build/default/src"))))
 
 (library
   (name        ocamlbuildlib_dune)

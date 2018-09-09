@@ -1,0 +1,12 @@
+(rule
+  (targets ocamlbuild_pack.cmo ocamlbuild_pack.cmx ocamlbuildlightlib.cma ocamlbuildlib.cma ocamlbuildlib.cmxa ocamlbuild.top ocamlbuildlight.byte ocamlbuild.byte ocamlbuild.native signatures.cmi signatures.cmti ocamlbuildlib.cma ocamlbuild.cmo ocamlbuild_pack.cmi ocamlbuild_plugin.cmi ocamlbuild_executor.cmi ocamlbuild_unix_plugin.cmi ocamlbuildlib.cmxa ocamlbuildlib.a ocamlbuild.cmx ocamlbuild.o ocamlbuild_pack.cmx ocamlbuild_plugin.cmx ocamlbuild_executor.cmx ocamlbuild_unix_plugin.cmx ocamlbuild_plugin.o ocamlbuild_executor.o ocamlbuild_unix_plugin.o)
+  (deps    ../ocamlbuild.cma ../ocamlbuild.cmxa ../bootstrap.itarget (glob_files ../*.ml{lib,pack,top}) ../_tags ../ocamlbuildlight.ml ../ocamlbuildlight.mli)
+  (action  (chdir .. (run %{exe:../ocamlbuild.exe} -build-dir bootstrap -no-hygiene bootstrap.otarget))))
+
+(install
+  (section bin)
+  (files (ocamlbuild.native as ocamlbuild) ocamlbuild.byte ocamlbuild.native))
+
+(install
+  (section lib)
+  (files signatures.cmi signatures.cmti ocamlbuildlib.cma ocamlbuild.cmo ocamlbuild_pack.cmi ocamlbuild_plugin.cmi ocamlbuild_executor.cmi ocamlbuild_unix_plugin.cmi ocamlbuildlib.cmxa ocamlbuildlib.a ocamlbuild.cmx ocamlbuild.o ocamlbuild_pack.cmx ocamlbuild_plugin.cmx ocamlbuild_executor.cmx ocamlbuild_unix_plugin.cmx ocamlbuild_plugin.o ocamlbuild_executor.o ocamlbuild_unix_plugin.o))

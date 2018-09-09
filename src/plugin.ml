@@ -72,7 +72,7 @@ module Make(U:sig end) =
            (* FIXME: remove ocamlbuild_config.ml in _build/ if removed in parent *)
       else begin
         if !Options.native_plugin
-            && not (sys_file_exists ((!Ocamlbuild_where.libdir)/"ocamlbuildlib.cmxa")) then
+            && not (sys_file_exists ((!Ocamlbuild_where.libdir)/"ocamlbuildlib_dune.cmxa")) then
           begin
             Options.native_plugin := false;
             eprintf "Warning: Won't be able to compile a native plugin"
@@ -91,7 +91,7 @@ module Make(U:sig end) =
             "cma", "cmo", !Options.plugin_ocamlc, "byte"
         in
 
-        let (unix_spec, ocamlbuild_lib_spec, ocamlbuild_pack_spec, ocamlbuild_module_spec) =
+        let (unix_spec, ocamlbuild_lib_spec, ocamlbuild_module_spec, ocamlbuild_pack_spec) =
 
           let use_light_mode =
             not !Options.native_plugin && !*My_unix.is_degraded in
@@ -177,14 +177,14 @@ module Make(U:sig end) =
             else if use_light_mode then `Nothing
             else `Lib "unix" in
 
-          let (ocamlbuild_lib, ocamlbuild_pack) =
-            if use_ocamlfind_pkgs then (`Package "ocamlbuild", `Nothing)
-            else if use_light_mode then (`Local_lib "ocamlbuildlightlib", `Nothing) (* @@DRA TODO *)
-            else (`Local_lib "ocamlbuildlib", `Local_lib "pack/ocamlbuild_pack") in
+          let ocamlbuild_lib =
+            if use_ocamlfind_pkgs then `Package "ocamlbuild"
+            else if use_light_mode then `Local_lib "ocamlbuildlightlib"
+            else `Local_lib "ocamlbuildlib_dune" in
 
           let ocamlbuild_module =
             if use_light_mode then `Local_mod "ocamlbuildlight"
-            else `Local_mod "ocamlbuild" in
+            else `Local_lib "ocamlbuild" in
 
           let dir = !Ocamlbuild_where.libdir in
           let dir = if Pathname.is_implicit dir then Pathname.pwd/dir else dir in
@@ -199,11 +199,10 @@ module Make(U:sig end) =
             | `Nothing -> N
             | `Package pkg -> S[A "-package"; A pkg]
             | `Lib lib -> P (lib -.- cma)
-            | `Local_lib llib ->
-                S [A "-I"; A (dir/(Filename.dirname llib)); P (in_dir (llib -.- cma))]
+            | `Local_lib llib -> S [A "-I"; A dir; P (in_dir (llib -.- cma))]
             | `Local_mod lmod -> P (in_dir (lmod -.- cmo)) in
 
-          (spec unix_lib, spec ocamlbuild_lib, spec ocamlbuild_pack, spec ocamlbuild_module)
+          (spec unix_lib, spec ocamlbuild_lib, spec ocamlbuild_module, spec @@ `Local_lib "ocamlbuild_pack")
         in
 
         let plugin_tags =
@@ -237,6 +236,7 @@ module Make(U:sig end) =
                 T plugin_tags;
                 plugin_config; P plugin_file;
                 ocamlbuild_module_spec;
+                A"-linkall";
                 A"-o"; Px (plugin^(!Options.exe))])
         in
         Shell.chdir !Options.build_dir;

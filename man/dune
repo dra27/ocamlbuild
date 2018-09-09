@@ -1,0 +1,17 @@
+(rule
+  (with-stdout-to ocamlbuild.1
+    (progn (cat %{dep:ocamlbuild.header.1})
+           (cat %{dep:ocamlbuild.options.1})
+           (cat %{dep:ocamlbuild.footer.1}))))
+
+(rule (with-stdout-to ocamlbuild.options.1 (run %{dep:options_man.exe})))
+
+(executable
+  (name      options_man)
+  (libraries ocamlbuild_pack)
+  (flags     (-w L -w R -w Z -safe-string))
+  (modes     byte))
+
+(install
+  (section man)
+  (files   (ocamlbuild.1 as man1/ocamlbuild.1)))

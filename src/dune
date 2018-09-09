@@ -1,0 +1,58 @@
+(library
+  (name        ocamlbuild_pack)
+  (libraries   unix)
+  (modules     (:standard ocamlbuild_config \ ocamlbuild_executor ocamlbuildlight ocamlbuild ocamlbuild_plugin ocamlbuild_unix_plugin ocamlbuildplug ppcache))
+  (flags       (-w L -w R -w Z -safe-string))
+  (modules_without_implementation signatures))
+
+; This has to be done by hand, because we need ocamlbuild_config.ml to be
+; #use_mod'able in the testsuite
+(rule
+  (with-stdout-to ocamlbuild_config.ml
+                  (run %{bin:cppo}
+                         -D "BINDIR %{read:bindir.probed}"
+                         -D "LIBDIR %{read:libdir.probed}"
+                         -D "LIBDIR_ABS %{read:libdir.probed}"
+                         -D "OCAMLLIB %{ocaml_where}"
+                         -D "EXT_LIB %{ext_lib}"
+                         -D "EXT_OBJ %{ext_obj}"
+                         -D "EXT_SO %{ext_dll}"
+                         -D "EXT_EXE %{ext_exe}"
+                         -D "ARCH %{ocaml-config:architecture}"
+                         -D "VERSION %{read:../VERSION}" %{dep:ocamlbuild_config.ml.in})))
+
+(ocamllex (modules glob_lexer lexers))
+
+(rule
+  (ignore-stderr (with-stdout-to bindir.probed (system "opam config var bin || echo %{ocaml_bin}"))))
+
+(rule
+  (ignore-stderr (with-stdout-to libdir.probed (system "opam config var lib || ocamlfind printconf destdir || echo %{ocaml_where}"))))
+
+(library
+  (name        ocamlbuildlib_dune)
+  (libraries   ocamlbuild_pack)
+  (modules     ocamlbuild_plugin ocamlbuild_executor ocamlbuild_unix_plugin)
+  (flags       (-w L -w R -w Z -safe-string))
+  (wrapped     false))
+
+(rule (with-stdout-to ocamlbuildplug.ml (cat ocamlbuild.ml)))
+
+(library
+  (name        ocamlbuild)
+  (libraries   ocamlbuildlib_dune unix)
+  (flags       (-w L -w R -w Z -safe-string))
+  (modes       native byte)
+  (modules     ocamlbuildplug)
+  (wrapped     false))
+
+(executable
+  (name        ocamlbuild)
+  (libraries   ocamlbuildlib_dune unix)
+  (flags       (-w L -w R -w Z -safe-string))
+  (modes       native byte)
+  (modules     ocamlbuild))
+
+(install
+  (section lib)
+  (files signatures.mli))

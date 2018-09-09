@@ -19,7 +19,7 @@ build: [
 ]
 
 available: [ocaml-version >= "4.03"]
-depends: [ "jbuilder" {>= "1.0+beta19.1"} "cppo" {>= "1.6.0"} ]
+depends: [ "dune" {build & >= "1.1.0"} "cppo" {build & >= "1.6.0"} ]
 conflicts: [
   "base-ocamlbuild"
   "ocamlfind" {< "1.6.2"}

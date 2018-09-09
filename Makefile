@@ -14,10 +14,10 @@
 # see 'check-if-preinstalled' target
 CHECK_IF_PREINSTALLED ?= true
 
-JBUILDER ?= jbuilder
+DUNE ?= dune
 
 all:
-	$(JBUILDER) build @install
+	$(DUNE) build @install
 
 byte: all # compatibility alias
 
@@ -28,14 +28,14 @@ allopt: all # compatibility alias
 distclean:: clean
 
 clean::
-	$(JBUILDER) clean
+	$(DUNE) clean
 
 # man page
 
 man: _build/install/default/man/man1/ocamlbuild.1
 
 _build/install/default/man/man1/ocamlbuild.1:
-	$(JBUILDER) build man/ocamlbuild.1
+	$(DUNE) build man/ocamlbuild.1
 
 man/ocamlbuild.options.1: man/options_man.byte
 	./man/options_man.byte > man/ocamlbuild.options.1
@@ -43,10 +43,10 @@ man/ocamlbuild.options.1: man/options_man.byte
 # Testing
 
 test-%: testsuite/%.ml all
-	$(JBUILDER) build testsuite/runtest-$*
+	$(DUNE) build testsuite/runtest-$*
 
 test: all
-	$(JBUILDER) runtest --no-buffer --display=short
+	$(DUNE) runtest --force --no-buffer --display=short
 
 # Installation
 
@@ -159,7 +159,7 @@ findlib-install: check-if-preinstalled
 findlib-uninstall: uninstall-bin uninstall-lib-findlib
 
 opam-install: check-if-preinstalled
-	$(JBUILDER) build ocamlbuild.install
+	$(DUNE) build ocamlbuild.install
 
 check-if-preinstalled:
 ifeq ($(CHECK_IF_PREINSTALLED), true)

@@ -1,0 +1,5 @@
+(ignored_subdirs (examples howto manual misc samples test))
+
+(install
+  (section doc)
+  (files Changes Readme.md))

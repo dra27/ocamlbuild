@@ -2,7 +2,4 @@
 
 ocamlbuild.install
 
-/bootstrap/src
-/bootstrap/_build*
-
 .merlin

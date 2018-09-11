@@ -1,0 +1,17 @@
+(rule
+  (targets ocamlbuild_pack.cmo ocamlbuild_pack.cmx ocamlbuildlightlib.cma ocamlbuildlib.cma ocamlbuildlib.cmxa ocamlbuild.top ocamlbuildlight.byte ocamlbuild.byte ocamlbuild.native signatures.cmi signatures.cmti ocamlbuildlib.cma ocamlbuild.cmo ocamlbuild_pack.cmi ocamlbuild_plugin.cmi ocamlbuild_executor.cmi ocamlbuild_unix_plugin.cmi ocamlbuildlib.cmxa ocamlbuildlib.a ocamlbuild.cmx ocamlbuild.o ocamlbuild_pack.cmx ocamlbuild_plugin.cmx ocamlbuild_executor.cmx ocamlbuild_unix_plugin.cmx ocamlbuild_plugin.o ocamlbuild_executor.o ocamlbuild_unix_plugin.o)
+  (deps    ../src/ocamlbuild.exe ../src/ocamlbuild.cma ../src/ocamlbuild.cmxa bootstrap.itarget (glob_files *.ml{lib,pack,top}) _tags (glob_files ../src/*.ml{,i,l}))
+  (action  (progn (system "mkdir -p %{workspace_root}/../../_ocamlbuild/%{name} 2>%{null} || md %{workspace_root}\\..\\..\\..\\_ocamlbuild\\%{name} 2>nul")
+                  (system "cp -f %{workspace_root}/../../src/*.ml* %{workspace_root}/../../_ocamlbuild/%{name}/ 2>%{null} || copy /y %{workspace_root}\\..\\..\\src\\*.ml* %{workspace_root}\\..\\..\\_ocamlbuild\\%{name}\\ >nul")
+                  (system "cp -f %{workspace_root}/../../bootstrap/* %{workspace_root}/../../_ocamlbuild/%{name}/ 2>%{null} || copy /y %{workspace_root}\\..\\..\\bootstrap\\* %{workspace_root}\\..\\..\\_ocamlbuild\\%{name}\\ >nul")
+                  (system "cp -f %{project_root}/src/ocamlbuild_config.ml %{workspace_root}/../../_ocamlbuild/%{name}/ 2>%{null} || copy /y %{project_root}\\src\\ocamlbuild_config.ml %{workspace_root}\\..\\..\\_ocamlbuild\\%{name}\\ >nul")
+                  (system "cd %{workspace_root}/../../_ocamlbuild/%{name} && ../../%{build_dir}/src/ocamlbuild.exe bootstrap.otarget")
+                  (system "cd %{workspace_root}/../../_ocamlbuild/%{name}/_build && (cp -f %{targets} ../../../%{build_dir}/bootstrap/ 2>%{null} || copy /y %{targets} ..\\..\\..\\%{build_dir}\\bootstrap\\ >nul)"))))
+
+(install
+  (section bin)
+  (files (ocamlbuild.native as ocamlbuild) ocamlbuild.byte ocamlbuild.native))
+
+(install
+  (section lib)
+  (files signatures.cmi signatures.cmti ocamlbuildlib.cma ocamlbuild.cmo ocamlbuild_pack.cmi ocamlbuild_plugin.cmi ocamlbuild_executor.cmi ocamlbuild_unix_plugin.cmi ocamlbuildlib.cmxa ocamlbuildlib.a ocamlbuild.cmx ocamlbuild.o ocamlbuild_pack.cmx ocamlbuild_plugin.cmx ocamlbuild_executor.cmx ocamlbuild_unix_plugin.cmx ocamlbuild_plugin.o ocamlbuild_executor.o ocamlbuild_unix_plugin.o))

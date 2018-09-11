@@ -1,4 +1,4 @@
-(ignored_subdirs (examples howto manual misc samples test))
+(ignored_subdirs (examples howto manual misc samples test _ocamlbuild))
 
 (install
   (section doc)

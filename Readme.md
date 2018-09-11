@@ -28,33 +28,30 @@ opam pin add ocamlbuild --kind=git "https://github.com/ocaml/ocamlbuild.git#mast
 
 ## Compilation from source ##
 
-We assume GNU make, which may be named `gmake` on your system.
+Compilation requires Dune and cppo.
 
 1. Configure.
-```
-make configure
-```
 
 The installation location is determined by the installation location
 of the ocaml compiler. You can set the following configuration
-variables (`make configure VAR=foo`):
+variables by writing to files in `src/`:
 
-- `OCAMLBUILD_{PREFIX,BINDIR,LIBDIR}` will use opam or
-  ocaml/ocamlfind's settings by default; see `configure.make` for the
-  precise initialization logic.
+- bindir.probed specifies where ocamlbuild will be installed. It defaults
+  to either `opam config var bin` or the directory where ocaml is found.
 
-- `OCAML_NATIVE`: should be `true` if native compilation is available
-  on your machine, `false` otherwise
+- libdir.probed specifies the directory to which the ocamlbuild libraries
+  should be installed and is either `opam config var lib`,
+  `ocamlfind printconf destdir` or `ocamlc -where`.
+
+- native.probed should contain `true` if native compilation is available
+  on your machine, `false` otherwise.
 
 2. Compile the sources.
 ```
-make
+dune build @install
 ```
 
 3. Install.
 ```
-make install
+opam-installer ocamlbuild.install
 ```
-
-You can also clean the compilation results with `make clean`, and
-uninstall a manually-installed OCamlbuild with `make uninstall`.

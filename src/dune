@@ -12,9 +12,10 @@
                   (run %{bin:cppo}
                          -D "BINDIR %{read:bindir.probed}"
                          -D "LIBDIR %{read:libdir.probed}"
+; TODO Test this on Windows (in particular the logic in ocamlbuild_where.ml and also the lib-pkg build on Linux/Windows for opam, which requires this to work)
                          -D "LIBDIR_ABS %{read:libdir.probed}"
                          -D "OCAMLLIB %{ocaml_where}"
-                         -D "SUPPORTS_SHARED_LIBRARIES %{ocaml-config:supports_shared_libraries}"
+                         -D "SUPPORTS_SHARED_LIBRARIES %{read:native.probed}"
                          -D "EXT_LIB %{ext_lib}"
                          -D "EXT_OBJ %{ext_obj}"
                          -D "EXT_SO %{ext_dll}"
@@ -25,11 +26,19 @@
 (ocamllex (modules glob_lexer lexers))
 
 (rule
-  (ignore-stderr (with-stdout-to bindir.probed (system "opam config var bin || echo %{ocaml_bin}"))))
+  (targets bindir.probed)
+  (mode    fallback)
+  (action  (ignore-stderr (with-stdout-to %{targets} (system "opam config var bin || echo %{ocaml_bin}")))))
 
 (rule
-;  (ignore-stderr (with-stdout-to libdir.probed (system "opam config var lib || ocamlfind printconf destdir || echo %{ocaml_where}"))))
-  (ignore-stderr (with-stdout-to libdir.probed (echo "/home/dra/ocamlbuild/_build/default/src"))))
+  (targets libdir.probed)
+  (mode    fallback)
+  (action  (ignore-stderr (with-stdout-to %{targets} (system "opam config var lib || ocamlfind printconf destdir || echo %{ocaml_where}")))))
+
+(rule
+  (targets native.probed)
+  (mode    fallback)
+  (action  (with-stdout-to %{targets} (echo %{ocaml-config:supports_shared_libraries}))))
 
 (library
   (name        ocamlbuildlib_dune)

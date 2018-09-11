@@ -46,5 +46,5 @@ let libdir = ref begin
         Sys.getenv "OCAMLLIB", Filename.concat subroot "ocamlbuild"
       with Not_found -> O.libdir, "ocamlbuild"
   in
-  (*Filename.concat root suffix*) root
+  Filename.concat root suffix
 end;;

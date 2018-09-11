@@ -18,9 +18,7 @@ let libdir = STRINGIFY(LIBDIR)
 let ocaml_libdir = STRINGIFY(OCAMLLIB)
 let libdir_abs = STRINGIFY(LIBDIR_ABS)
 let ocaml_native = STRINGIFY(ARCH) <> "none"
-(* @@DRA This should be probed from Makefile.config (Dune feature?) *)
-(* Aren't there multiple PRs for this? *)
-let supports_shared_libraries = true
+let supports_shared_libraries = SUPPORTS_SHARED_LIBRARIES
 let strip_dot s = String.sub s 1 (String.length s - 1)
 let a = strip_dot STRINGIFY(EXT_LIB)
 let o = strip_dot STRINGIFY(EXT_OBJ)

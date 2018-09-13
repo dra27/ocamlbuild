@@ -29,6 +29,7 @@ distclean:: clean
 
 clean::
 	$(DUNE) clean
+	rm -rf _ocamlbuild
 
 # man page
 

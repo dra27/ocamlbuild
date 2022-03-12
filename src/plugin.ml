@@ -176,7 +176,7 @@ module Make(U:sig end) =
             if use_ocamlfind_pkgs then `Package "unix"
             else if use_light_mode then `Nothing
             else let dir = match split_ocaml_version with
-                 | Some (major, minor, _, _) when (major, minor) >= (5, 0) ->
+                 | Some (major, minor, _, _) when (major, minor) >= (4, 14) ->
                     Some "unix"
                  | _ -> None
                  in

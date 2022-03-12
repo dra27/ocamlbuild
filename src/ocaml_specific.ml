@@ -821,7 +821,7 @@ flag ["ocaml"; "pp"; "camlp4:no_quot"] (A"-no_quot");;
 
 let ocaml_otherlibs_lib =
   match split_ocaml_version with
-  | Some (major, minor, _, _) when (major, minor) >= (5, 0) ->
+  | Some (major, minor, _, _) when (major, minor) >= (4, 14) ->
     fun name ->
       let dir = "+" ^ name in
       ocaml_lib ~extern:true ~dir name;

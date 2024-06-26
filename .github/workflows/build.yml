@@ -34,16 +34,14 @@ jobs:
             ocaml-compiler: "4.11"
           - os: ubuntu-latest
             ocaml-compiler: "4.12"
+          - os: windows-latest
+            ocaml-compiler: "ocaml-base-compiler.4.14.2,system-msvc"
+          - os: windows-latest
+            ocaml-compiler: "ocaml-variants.5.2.0+msvc"
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Set git to use LF
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-          git config --global core.ignorecase false
-
       - name: Checkout tree
         uses: actions/checkout@v4
 
@@ -52,6 +50,11 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           allow-prerelease-opam: true
+
+      - name: set ocamlversion
+        run: echo "ocamlversion=$(opam exec -- ocamlc -version)" >> $GITHUB_OUTPUT
+        id: conf
+        shell: bash
 
       - run: opam install . --with-test --deps-only
 
@@ -65,13 +68,13 @@ jobs:
       - run: opam exec -- opam install -v ocamlbuild
       - run: opam exec -- opam install -v menhir
       - run: opam exec -- opam install -v camlp4
-        if: (! startsWith(matrix.ocaml-compiler, '5.2'))
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.2.') }}
       - run: opam exec -- make test-external
-        if: (! startsWith(matrix.ocaml-compiler, '5.2'))
-      - run: opam exec -- opam install -v mtime.1.0.0 # this tests topkg, with stub libraries
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.2.') }}
+      - run: opam exec -- opam install -v mtime.1.4.0 # this tests topkg, with stub libraries
       - run: opam exec -- opam install -v inotify.2.3 # this tests oasis, with stub libraries
-        if: (! startsWith(matrix.ocaml-compiler, '5')) && runner.os != 'Windows'
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' }}
       - run: opam exec -- opam install -v cpuid.0.1.1 # this tests the ocb-stubblr plugin
         if: runner.os != 'Windows'
       - run: opam exec -- opam install -v shcaml.0.2.1 # this tests the cppo plugin
-        if: (! startsWith(matrix.ocaml-compiler, '5')) && runner.os != 'Windows'
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' }}

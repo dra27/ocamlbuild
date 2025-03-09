@@ -6,11 +6,11 @@
 # from the main Makefile, but this made it not robust to addition of
 # new variables to this ocaml/Makefile.config that we do not control.
 
-include $(shell ocamlc -where)/Makefile.config
+OCAML_LIBDIR = $(shell ocamlc -where)
+include $(OCAML_LIBDIR)/Makefile.config
 
 OCAML_PREFIX = $(PREFIX)
 OCAML_BINDIR = $(BINDIR)
-OCAML_LIBDIR = $(LIBDIR)
 OCAML_MANDIR = $(MANDIR)
 
 # If you want to affect ocamlbuild's configuration by passing variable
@@ -66,11 +66,6 @@ distclean:
 
 Makefile.config:
 	(echo "# This file was generated from configure.make"; \
-	echo ;\
-	echo "OCAML_PREFIX=$(OCAML_PREFIX)"; \
-	echo "OCAML_BINDIR=$(OCAML_BINDIR)"; \
-	echo "OCAML_LIBDIR=$(OCAML_LIBDIR)"; \
-	echo "OCAML_MANDIR=$(OCAML_MANDIR)"; \
 	echo ;\
 	echo "EXT_OBJ=$(EXT_OBJ)"; \
 	echo "EXT_ASM=$(EXT_ASM)"; \

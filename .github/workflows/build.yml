@@ -24,6 +24,7 @@ jobs:
           - "5.0"
           - "5.1"
           - "5.2"
+          - "5.3"
         include:
           - os: ubuntu-latest
             ocaml-compiler: "4.08"
@@ -39,12 +40,20 @@ jobs:
             ocaml-compiler: "ocaml-base-compiler.4.14.2,system-msvc"
           - os: windows-latest
             ocaml-compiler: "ocaml-variants.5.2.0+msvc"
+        exclude:
+          # The linker emits warnings with old ocaml version on macos
+          # We could try to fix the warnings by passing addition flags
+          # but the value would be limited compared to the effort.
+          - os: macos-latest
+            ocaml-compiler: "4.13"
+          - os: macos-latest
+            ocaml-compiler: "5.0"
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set-up OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v3
